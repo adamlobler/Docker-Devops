@@ -1,0 +1,11 @@
+{
+  "python.pythonPath": "/Users/its_behind_you/.local/share/virtualenvs/cogito-backend-7Skd0V1p/bin/python",
+  "python.linting.pylintEnabled": true,
+  "python.linting.enabled": true,
+  "python.envFile": "cogito_backend/.envFile",
+  "python.linting.pylintArgs": [
+    "--load-plugins",
+    "pylint_django"
+  ],
+  "python.formatting.provider": "autopep8"
+}

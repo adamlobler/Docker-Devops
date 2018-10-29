@@ -1,0 +1,173 @@
+# SCALARS
+
+# password stored in special format in DB
+scalar Password
+
+# HTML string
+scalar HTMLString
+
+# generic DateTime type
+scalar DateTime
+
+# ------------------------------------------------------------------
+# USER
+
+type User {
+  id: Int!
+  is_active: Boolean! # set this to `false` when deleting
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: Password!
+  type: UserType!
+  is_admin: Boolean!
+  role: String!
+}
+
+# ------------------------------------------------------------------
+# SOCIAL
+# Interface that encapsulates all common social media features
+
+interface Social {
+  comments: [Comment!]!
+  likedBy: [User!]!
+  createdAt: DateTime!
+}
+
+# ------------------------------------------------------------------
+# NOTE
+
+type Note implements Social {
+  id: Int!
+  is_active: Boolean! # set this to `false` when deleting
+  type: NoteType!
+  content: HTMLString!
+  author: User!
+  comments: [Comment!]!
+  liked_by: [User!]!
+  title: String!
+  type: String!
+}
+
+# ------------------------------------------------------------------
+# SNIPPET
+
+enum SnippetType {
+  ADD
+  REMOVE
+  FORMAT
+}
+
+type Snippet implements Social {
+  id: Int!
+  content: HTMLString!
+  type: SnippetType!
+  author: User!
+  comments: [Comment!]!
+  liked_by: [User!]!
+  is_merged: Boolean!
+}
+
+# ------------------------------------------------------------------
+# SUBJECT
+
+type Subject {
+  id: Int!
+  is_active: Boolean! # set this to `false` when deleting
+  info: SubjectInfo!
+  notes: [Note!]!
+  students: [Student!]!
+  faculty: [User!]!
+  updates: [Post!]!
+}
+
+type SubjectInfo {
+  subject_name: String!
+  subject_code: String!
+  semester: String!
+  description: HTMLString!
+  prerequisites: [Subject!]!
+}
+
+# ------------------------------------------------------------------
+# POST
+
+type Post implements Social {
+  id: Int!
+  is_active: Boolean! # set this to `false` when deleting
+  author: User!
+  content: HTMLString!
+  comments: [Comment!]!
+  liked_by: [User!]!
+  created_at: DateTime!
+  edited_at: DateTime
+}
+
+# ------------------------------------------------------------------
+# COMMENT
+
+type Comment implements Social {
+  id: Int!
+  is_active: Boolean! # set this to `false` when deleting
+  author: User!
+  content: HTMLString!
+  comments: [Comment!]!
+  liked_by: [User!]!
+  created_at: DateTime!
+  edited_at: DateTime
+}
+
+# ------------------------------------------------------------------
+# MUTATION
+
+type Mutation {
+  # User
+  # Operations only valid for the user's own DB entry
+  setPassword($old_password:String!, $new_password: String!): Boolean
+  setUserType($new_type: UserType!): UserType
+  delete($userId: Int!): Boolean
+
+  # Social
+  addComment($socialId: Int!, text: HTMLString!): Comment
+  like($socialId: Int!): Boolean
+  unlike($socialId: Int!): Boolean
+
+  # Note
+  addSnippet($noteId: Int!): Snippet
+  deleteSnippet($noteId: Int!): Boolean
+  mergeSnippet($noteId: Int!, $snippetId: Int!): Note
+  setTitle($noteId: Int!, $title: String!): Note
+  delete($noteId: Int!): Boolean
+  addComment($socialId: Int!, text: HTMLString!): Comment
+  like($socialId: Int!): Boolean
+  unlike($socialId: Int!): Boolean
+
+  # Snippet
+  update(newContent: HTMLString!): Snippet
+  addComment($socialId: Int!, text: HTMLString!): Comment
+  like($socialId: Int!): Boolean
+  unlike($socialId: Int!): Boolean
+  delete($snippetId: Int!): Boolean
+
+  # Subject
+  addNote($note: Note!): Subject
+  addMember($user: User!): Subject
+  removeMember($user: User!): Subject
+  postUpdate($post: Post!): Post
+  updateInfos(newContent: SubjectInfo!): Snippet
+  delete($subjectId: Int!): Boolean
+
+  # Post
+  addComment($socialId: Int!, text: HTMLString!): Comment
+  like($socialId: Int!): Boolean
+  unlike($socialId: Int!): Boolean
+  edit($newContent: HTMLString!): Post
+  delete($postId: Int!): Boolean
+
+  # Comment
+  addComment($socialId: Int!, text: HTMLString!): Comment
+  like($socialId: Int!): Boolean
+  unlike($socialId: Int!): Boolean
+  edit($newContent: HTMLString!): Post
+  delete($commentId: Int!): Boolean
+}
