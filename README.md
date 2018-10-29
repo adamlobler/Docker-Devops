@@ -63,7 +63,6 @@ Version of Docker composer
 `version: "3"`
 
 
-
 `services:`
 
   `web:`
@@ -78,13 +77,13 @@ The default command that will be executed when Docker runs the container image.
 
 Assigns a name for the container.
 
-    `container_name: music_service`
+    `container_name: `
 
 Mounts the project root directory to the container.
 
     `volumes:`
 
-      `- .:/music_service`
+      `- .:/cogito_backend`
 
 Expose the port we want to access the container
 
